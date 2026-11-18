@@ -37,21 +37,24 @@ physical inputs. Project for Advanced Logic Design, Università di Trento.
 | `rtl/soc.vhd`, `rtl/fpga_top.vhd` | system on chip and FPGA top level (clock 100 → 50 MHz with an MMCM) |
 | `constraints/nexys_a7.xdc` | pins and clock of the Nexys A7-100T |
 | `tb/tb_soc.vhd` | system testbench: the whole SoC with models of the UART host, the ESP32, the temperature sensor (`adt7420_model.vhd`), buttons, switches and display, plus an I²C timing checker (`i2c_timing_check.vhd`) |
+| `program/irq_alu.imem.hex`, `program/irq_alu.dmem.hex` | the demo program for the instruction and data memories (one 32-bit hex word per line) |
 | `esp32/rand_sender/` | ESP32-S3 firmware (PlatformIO) that sends a random number every second to Pmod JA1 |
 
 ## Simulation
 
-The testbench needs a program image: `IMEM_FILE` / `DMEM_FILE` are text
-files with one 32-bit hex word per line. With GHDL:
+The testbench loads the program image given by `IMEM_FILE` / `DMEM_FILE`
+(text files with one 32-bit hex word per line), for example the demo program
+in `program/`. With GHDL:
 
 ```sh
-ghdl -a --std=08 rtl/core/riscv_pkg.vhd rtl/core/*.vhd rtl/mem/*.vhd rtl/io/*.vhd \
-     rtl/soc.vhd tb/adt7420_model.vhd tb/i2c_timing_check.vhd tb/tb_soc.vhd
-ghdl -e --std=08 tb_soc
-ghdl -r --std=08 tb_soc -gIMEM_FILE=prog.imem.hex -gDMEM_FILE=prog.dmem.hex
+ghdl -i --std=08 rtl/core/*.vhd rtl/mem/*.vhd rtl/io/*.vhd rtl/soc.vhd tb/*.vhd
+ghdl -m --std=08 tb_soc
+ghdl -r --std=08 tb_soc -gIMEM_FILE=program/irq_alu.imem.hex -gDMEM_FILE=program/irq_alu.dmem.hex \
+     -gSW_INIT=12800 -gSW5_AT=3000 -gEXPECT_SEG7=200.40000 -gMAX_CYCLES=20000
 ```
 
-The testbench reports PASS / FAIL (from the `TOHOST` register), the cycle,
+The example sets the switches to 200 (SW13..SW6), raises SW5 and passes when
+the display shows `200.40000` (200 and 200²). The testbench reports PASS / FAIL (from the `TOHOST` register), the cycle,
 instruction, stall and flush counts, the CPI and all 32 registers. Generics
 select the stimuli (`RX_TEXT`, `BTNC_AT`, `SW5_AT`, `SW_INIT`, `TEMP_RAW`),
 the expected display text (`EXPECT_SEG7`) and an instruction trace (`TRACE`).
@@ -59,7 +62,8 @@ the expected display text (`EXPECT_SEG7`) and an instruction trace (`TRACE`).
 ## FPGA
 
 In Vivado, add `rtl/` (top `fpga_top`) and `constraints/nexys_a7.xdc`, and set
-the generics `IMEM_FILE` / `DMEM_FILE` to the program image.
+the generics `IMEM_FILE` / `DMEM_FILE` to the full paths of the two files in
+`program/`: the program is stored in the Block RAMs of the bitstream.
 
 Results (Vivado, xc7a100t, 50 MHz): timing met with WNS = +3.5 ns
 (f<sub>max</sub> ≈ 60 MHz), 1721 LUTs (2.7 %), 1378 flip-flops (1.1 %),

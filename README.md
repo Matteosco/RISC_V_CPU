@@ -80,9 +80,9 @@ Two settings matter: the files must be compiled as **VHDL-2008**, and the two
 `.hex` paths must be absolute, because the memories read them during
 synthesis. The bitstream is in `vivado/riscv_cpu.runs/impl_1/fpga_top.bit`.
 
-Results (Vivado, xc7a100t, 50 MHz): timing met with WNS = +3.5 ns
-(f<sub>max</sub> ≈ 60 MHz), 1721 LUTs (2.7 %), 1378 flip-flops (1.1 %),
-5 RAMB36, 0.234 W estimated.
+Results (Vivado, xc7a100t, 50 MHz): timing met with WNS = +3.25 ns
+(f<sub>max</sub> ≈ 60 MHz), 1723 LUTs (2.7 %), 1347 flip-flops (1.1 %),
+5 RAMB36, 0.231 W estimated.
 
 ## ESP32
 

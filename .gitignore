@@ -1,0 +1,18 @@
+# simulation and build output
+*.cf
+*.o
+*.ghw
+*.vcd
+*.hex
+
+# Vivado
+.Xil/
+*.jou
+*.log
+*.bit
+*.ltx
+
+# ESP32 / PlatformIO
+.pio/
+
+.DS_Store

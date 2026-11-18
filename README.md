@@ -61,9 +61,24 @@ the expected display text (`EXPECT_SEG7`) and an instruction trace (`TRACE`).
 
 ## FPGA
 
-In Vivado, add `rtl/` (top `fpga_top`) and `constraints/nexys_a7.xdc`, and set
-the generics `IMEM_FILE` / `DMEM_FILE` to the full paths of the two files in
-`program/`: the program is stored in the Block RAMs of the bitstream.
+The files are enough to build the bitstream. In the Vivado Tcl console, from
+the folder of the cloned repository:
+
+```tcl
+set root [pwd]
+create_project riscv_cpu $root/vivado -part xc7a100tcsg324-1 -force
+add_files [glob $root/rtl/*.vhd $root/rtl/*/*.vhd]
+set_property file_type {VHDL 2008} [get_files *.vhd]
+set_property top fpga_top [current_fileset]
+set_property generic "IMEM_FILE=\"$root/program/irq_alu.imem.hex\" DMEM_FILE=\"$root/program/irq_alu.dmem.hex\"" [current_fileset]
+add_files -fileset constrs_1 $root/constraints/nexys_a7.xdc
+launch_runs impl_1 -to_step write_bitstream -jobs 4
+wait_on_run impl_1
+```
+
+Two settings matter: the files must be compiled as **VHDL-2008**, and the two
+`.hex` paths must be absolute, because the memories read them during
+synthesis. The bitstream is in `vivado/riscv_cpu.runs/impl_1/fpga_top.bit`.
 
 Results (Vivado, xc7a100t, 50 MHz): timing met with WNS = +3.5 ns
 (f<sub>max</sub> ≈ 60 MHz), 1721 LUTs (2.7 %), 1378 flip-flops (1.1 %),

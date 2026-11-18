@@ -5,6 +5,7 @@
 *.vcd
 
 # Vivado
+vivado/
 .Xil/
 *.jou
 *.log

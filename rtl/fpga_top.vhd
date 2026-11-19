@@ -121,7 +121,6 @@ begin
             dbg_flush    => open,
             dbg_branch   => open,
             dbg_cpu_en   => open,
-            dbg_reg_data => open,
             illegal      => open);
 
     LED17_R <= led17_rgb(2);

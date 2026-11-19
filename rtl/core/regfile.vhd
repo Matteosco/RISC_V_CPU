@@ -23,10 +23,7 @@ entity regfile is
         -- write port
         we       : in  std_logic;
         rd_addr  : in  reg_addr_t;
-        rd_data  : in  word_t;
-        -- debug read port (simulation: register dump at the end of a program)
-        dbg_addr : in  reg_addr_t := "00000";
-        dbg_data : out word_t
+        rd_data  : in  word_t
     );
 end entity regfile;
 
@@ -42,8 +39,6 @@ begin
         end if;
     end process;
 
-    -- debug port: plain read of the stored value (x0 always 0)
-    dbg_data <= ZERO_WORD when dbg_addr = "00000" else regs(to_integer(unsigned(dbg_addr)));
 
     process (all)
     begin

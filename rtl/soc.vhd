@@ -63,8 +63,6 @@ entity soc is
         dbg_wb_we    : out std_logic;   -- register write in WB (trace)
         dbg_wb_rd    : out std_logic_vector(4 downto 0);
         dbg_wb_data  : out word_t;
-        dbg_reg_addr : in  std_logic_vector(4 downto 0) := "00000";  -- register dump (simulation)
-        dbg_reg_data : out word_t;
         illegal      : out std_logic
     );
 end entity soc;
@@ -164,9 +162,7 @@ begin
             dbg_csr       => core_csr,
             dbg_wb_we     => wb_we,
             dbg_wb_rd     => wb_rd,
-            dbg_wb_data   => wb_data,
-            dbg_reg_addr  => dbg_reg_addr,
-            dbg_reg_data  => dbg_reg_data);
+            dbg_wb_data   => wb_data);
 
     dbg_pc_wb   <= pc_wb;
     dbg_wb_we   <= wb_we;

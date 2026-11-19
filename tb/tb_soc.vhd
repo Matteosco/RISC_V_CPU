@@ -79,13 +79,12 @@ architecture sim of tb_soc is
     signal dbg_wb_we    : std_logic;
     signal dbg_wb_rd    : std_logic_vector(4 downto 0);
     signal dbg_wb_data  : std_logic_vector(31 downto 0);
+    signal regs         : word_array_t(0 to 31) := (others => (others => '0'));  -- copy of the register file
     signal dbg_stall    : std_logic;
     signal dbg_flush    : std_logic;
     signal dbg_cpu_en   : std_logic;
     signal dbg_branch   : std_logic;
     signal done         : boolean := false;
-    signal dbg_reg_addr : std_logic_vector(4 downto 0) := "00000";
-    signal dbg_reg_data : word_t;
     signal halted       : boolean := false;   -- "j ." reached
     signal last_pc      : word_t := (others => '1');
     signal same_pc      : natural := 0;
@@ -168,9 +167,18 @@ begin
             dbg_wb_we    => dbg_wb_we,
             dbg_wb_rd    => dbg_wb_rd,
             dbg_wb_data  => dbg_wb_data,
-            dbg_reg_addr => dbg_reg_addr,
-            dbg_reg_data => dbg_reg_data,
             illegal      => illegal);
+
+    -- copy of the register file, rebuilt from the register writes in WB
+    -- (dbg_wb_*): the register dump needs no read port into the hardware
+    process (clk)
+    begin
+        if rising_edge(clk) then
+            if dbg_wb_we = '1' then
+                regs(to_integer(unsigned(dbg_wb_rd))) <= dbg_wb_data;
+            end if;
+        end if;
+    end process;
 
     -- count the same events as the CYCLES/INSTRET/STALLS/FLUSHES registers
     process (clk)
@@ -256,10 +264,8 @@ begin
         -- register dump (the program is stopped in a loop, values are final)
         print("[tb] registers at the end of the program:");
         for r in 0 to 31 loop
-            dbg_reg_addr <= std_logic_vector(to_unsigned(r, 5));
-            wait for 1 ns;
-            print("[reg] " & reg_name(r) & " = 0x" & hex(dbg_reg_data) & "  ("
-                  & integer'image(to_integer(signed(dbg_reg_data))) & ")");
+            print("[reg] " & reg_name(r) & " = 0x" & hex(regs(r)) & "  ("
+                  & integer'image(to_integer(signed(regs(r)))) & ")");
         end loop;
         print("[tb] ------------------------------------------------");
         if not got then

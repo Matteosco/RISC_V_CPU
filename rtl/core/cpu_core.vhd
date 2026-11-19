@@ -92,12 +92,10 @@ entity cpu_core is
         dbg_flush_now : out std_logic;  -- IF/ID flushed at the next edge (misprediction, interrupt, mret)
         dbg_irq_now   : out std_logic;  -- an interrupt is taken in this cycle
         dbg_csr       : out std_logic_vector(2 downto 0);  -- MEIE, MPIE, MIE
-        -- register file debug read (simulation register dump)
+        -- register write in WB (instruction trace)
         dbg_wb_we     : out std_logic;  -- WB writes a register (rd /= x0)
         dbg_wb_rd     : out reg_addr_t; -- ... which one
-        dbg_wb_data   : out word_t;     -- ... with this value
-        dbg_reg_addr  : in  reg_addr_t := "00000";
-        dbg_reg_data  : out word_t
+        dbg_wb_data   : out word_t      -- ... with this value
     );
 end entity cpu_core;
 
@@ -322,9 +320,7 @@ begin
             rs2_data => id_rs2_value,
             we       => rd_write_en,
             rd_addr  => mem_wb.rd,
-            rd_data  => rd_value,
-            dbg_addr => dbg_reg_addr,
-            dbg_data => dbg_reg_data);
+            rd_data  => rd_value);
 
     u_hazard : entity work.hazard_unit
         port map (

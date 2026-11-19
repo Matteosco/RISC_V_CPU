@@ -23,9 +23,10 @@ physical inputs. Project for Advanced Logic Design, Università di Trento.
 - Hardware counters (cycles, instructions, stalls, flushes, branches)
 - Debug mode on the board: SW15 freezes the CPU, BTNU steps one cycle, SW14
   slow motion; the display shows the instructions in ID, EX, MEM, WB
-- Optional Vivado ILA (generic `USE_ILA`), with a register-write mode
-  (`ILA_WB`) to compare the board with the simulation instruction by
-  instruction
+- Optional Vivado ILA (generic `USE_ILA`, needs a Vivado ILA IP named
+  `ila_cpu` with 5 probes of 60, 12, 32, 32 and 64 bits, not included), with a
+  register-write mode (`ILA_WB`) to compare the board with the simulation
+  instruction by instruction
 
 ## Repository
 

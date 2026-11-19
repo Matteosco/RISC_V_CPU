@@ -59,6 +59,18 @@ instruction, stall and flush counts, the CPI and all 32 registers. Generics
 select the stimuli (`RX_TEXT`, `BTNC_AT`, `SW5_AT`, `SW_INIT`, `TEMP_RAW`),
 the expected display text (`EXPECT_SEG7`) and an instruction trace (`TRACE`).
 
+In the Vivado simulator (XSim), in a project created as in the next
+section, add the testbench to the simulation set and give it the program:
+
+```tcl
+add_files -fileset sim_1 [glob $root/tb/*.vhd]
+set_property file_type {VHDL 2008} [get_files -of_objects [get_filesets sim_1] *.vhd]
+set_property top tb_soc [get_filesets sim_1]
+set_property generic "IMEM_FILE=\"$root/program/irq_alu.imem.hex\" DMEM_FILE=\"$root/program/irq_alu.dmem.hex\" SW_INIT=12800 SW5_AT=3000 EXPECT_SEG7=\"200.40000\" MAX_CYCLES=20000" [get_filesets sim_1]
+set_property -name xsim.simulate.runtime -value all -objects [get_filesets sim_1]
+launch_simulation
+```
+
 ## FPGA
 
 The files are enough to build the bitstream. In the Vivado Tcl console, from

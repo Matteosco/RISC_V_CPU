@@ -114,14 +114,7 @@ begin
             tmp_scl      => TMP_SCL,
             tmp_sda      => TMP_SDA,
             tohost_valid => open,
-            tohost_data  => open,
-            dbg_pc_wb    => open,
-            dbg_retire   => open,
-            dbg_stall    => open,
-            dbg_flush    => open,
-            dbg_branch   => open,
-            dbg_cpu_en   => open,
-            illegal      => open);
+            tohost_data  => open);
 
     LED17_R <= led17_rgb(2);
     LED17_G <= led17_rgb(1);

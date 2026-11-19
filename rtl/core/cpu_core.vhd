@@ -81,7 +81,6 @@ entity cpu_core is
         flush_evt  : out std_logic;   -- mispredicted branch / jump (3 bubbles)
         branch_evt : out std_logic;   -- a branch or jump resolved in MEM
         dbg_pc_wb  : out word_t;      -- PC of the instruction in WB
-        illegal    : out std_logic;   -- illegal instruction reached EX
         -- pipeline view for the debug display
         dbg_pc_if  : out word_t;      -- PC being fetched
         dbg_pc_id  : out word_t;      -- PC in IF/ID
@@ -100,6 +99,7 @@ entity cpu_core is
 end entity cpu_core;
 
 architecture rtl of cpu_core is
+    signal illegal : std_logic;   -- illegal instruction reached EX (read by the testbench)
 
     ---------------------------------------------------------------------------
     -- Pipeline registers. Field names follow the lecture (Hennessy &

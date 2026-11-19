@@ -51,19 +51,9 @@ entity soc is
         led17_rgb    : out std_logic_vector(2 downto 0);   -- R, G, B of LD17
         tmp_scl      : inout std_logic;                    -- I2C bus of the ADT7420
         tmp_sda      : inout std_logic;                    --   temperature sensor
-        -- simulation / debug
+        -- simulation: test result mailbox (TOHOST register)
         tohost_valid : out std_logic;
-        tohost_data  : out word_t;
-        dbg_pc_wb    : out word_t;
-        dbg_retire   : out std_logic;   -- instruction retired (WB)
-        dbg_stall    : out std_logic;   -- load-use bubble inserted
-        dbg_flush    : out std_logic;   -- mispredicted branch / jump
-        dbg_branch   : out std_logic;   -- branch / jump resolved
-        dbg_cpu_en   : out std_logic;   -- CPU clock enable (1 = CPU advanced this cycle)
-        dbg_wb_we    : out std_logic;   -- register write in WB (trace)
-        dbg_wb_rd    : out std_logic_vector(4 downto 0);
-        dbg_wb_data  : out word_t;
-        illegal      : out std_logic
+        tohost_data  : out word_t
     );
 end entity soc;
 
@@ -150,7 +140,6 @@ begin
             flush_evt  => flush_evt,
             branch_evt => branch_evt,
             dbg_pc_wb  => pc_wb,
-            illegal    => illegal,
             dbg_pc_if  => pc_if,
             dbg_pc_id  => pc_id,
             dbg_pc_ex  => pc_ex,
@@ -163,11 +152,6 @@ begin
             dbg_wb_we     => wb_we,
             dbg_wb_rd     => wb_rd,
             dbg_wb_data   => wb_data);
-
-    dbg_pc_wb   <= pc_wb;
-    dbg_wb_we   <= wb_we;
-    dbg_wb_rd   <= wb_rd;
-    dbg_wb_data <= wb_data;
 
     u_imem : entity work.imem
         generic map (ADDR_BITS => IMEM_ADDR_BITS, INIT_FILE => IMEM_FILE)
@@ -241,12 +225,6 @@ begin
     end process;
 
     dbus_rdata <= io_rdata when io_sel_q = '1' else dmem_rdata;
-
-    dbg_retire <= retire;
-    dbg_stall  <= stall_evt;
-    dbg_flush  <= flush_evt;
-    dbg_branch <= branch_evt;
-    dbg_cpu_en <= cpu_en;
 
     ---------------------------------------------------------------------------
     -- Pipeline debug mode: single step (BTNU) / slow motion (SW14)

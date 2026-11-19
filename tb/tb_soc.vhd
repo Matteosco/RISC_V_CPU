@@ -157,17 +157,19 @@ begin
             tmp_scl      => tmp_scl,
             tmp_sda      => tmp_sda,
             tohost_valid => tohost_valid,
-            tohost_data  => tohost_data,
-            dbg_pc_wb    => dbg_pc_wb,
-            dbg_retire   => dbg_retire,
-            dbg_stall    => dbg_stall,
-            dbg_flush    => dbg_flush,
-            dbg_cpu_en   => dbg_cpu_en,
-            dbg_branch   => dbg_branch,
-            dbg_wb_we    => dbg_wb_we,
-            dbg_wb_rd    => dbg_wb_rd,
-            dbg_wb_data  => dbg_wb_data,
-            illegal      => illegal);
+            tohost_data  => tohost_data);
+
+    -- internal signals observed without extra ports (VHDL-2008 external names)
+    dbg_pc_wb   <= << signal .tb_soc.dut.pc_wb      : word_t >>;
+    dbg_retire  <= << signal .tb_soc.dut.retire     : std_logic >>;
+    dbg_stall   <= << signal .tb_soc.dut.stall_evt  : std_logic >>;
+    dbg_flush   <= << signal .tb_soc.dut.flush_evt  : std_logic >>;
+    dbg_branch  <= << signal .tb_soc.dut.branch_evt : std_logic >>;
+    dbg_cpu_en  <= << signal .tb_soc.dut.cpu_en     : std_logic >>;
+    dbg_wb_we   <= << signal .tb_soc.dut.wb_we      : std_logic >>;
+    dbg_wb_rd   <= << signal .tb_soc.dut.wb_rd      : std_logic_vector(4 downto 0) >>;
+    dbg_wb_data <= << signal .tb_soc.dut.wb_data    : word_t >>;
+    illegal     <= << signal .tb_soc.dut.u_core.illegal : std_logic >>;
 
     -- copy of the register file, rebuilt from the register writes in WB
     -- (dbg_wb_*): the register dump needs no read port into the hardware
